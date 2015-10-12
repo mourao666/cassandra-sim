@@ -125,7 +125,9 @@ permissions_validity_in_ms: 2000
 # compatibility include RandomPartitioner, ByteOrderedPartitioner, and
 # OrderPreservingPartitioner.
 #
-partitioner: org.apache.cassandra.dht.Murmur3Partitioner
+#partitioner: org.apache.cassandra.dht.Murmur3Partitioner
+#partitioner: org.apache.cassandra.dht.RandomPartitioner
+partitioner: org.apache.cassandra.dht.SimilarityPartitioner
 
 # Directories where Cassandra should store data on disk.  Cassandra
 # will spread data evenly across them, subject to the granularity of
