@@ -18,186 +18,95 @@
 
 package org.apache.cassandra.dht;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.annotations.VisibleForTesting;
-
-import org.apache.cassandra.db.CachedHashDecoratedKey;
 import org.apache.cassandra.db.DecoratedKey;
 import org.apache.cassandra.db.marshal.AbstractType;
-import org.apache.cassandra.db.marshal.IntegerType;
-import org.apache.cassandra.exceptions.ConfigurationException;
-import org.apache.cassandra.utils.ByteBufferUtil;
-import org.apache.cassandra.utils.FBUtilities;
-import org.apache.cassandra.utils.GuidGenerator;
-import org.apache.cassandra.utils.ObjectSizes;
-import org.apache.cassandra.utils.Pair;
 
-/**
- * This class generates a BigIntegerToken using MD5 hash.
- */
 public class SimilarityPartitioner implements IPartitioner
 {
-    public static final BigInteger ZERO = new BigInteger("0");
-    public static final BigIntegerToken MINIMUM = new BigIntegerToken("-1");
-    public static final BigInteger MAXIMUM = new BigInteger("2").pow(127);
-
-    private static final int HEAP_SIZE = (int) ObjectSizes.measureDeep(new BigIntegerToken(FBUtilities.hashToBigInteger(ByteBuffer.allocate(1))));
-
-    public static final SimilarityPartitioner instance = new SimilarityPartitioner();
-
+    /**
+     * Transform key to object representation of the on-disk format.
+     *
+     * @param key the raw, client-facing key
+     * @return decorated version of key
+     */
     public DecoratedKey decorateKey(ByteBuffer key)
     {
-        return new CachedHashDecoratedKey(getToken(key), key);
+        return null;
     }
 
-    public Token midpoint(Token ltoken, Token rtoken)
+    /**
+     * Calculate a Token representing the approximate "middle" of the given
+     * range.
+     *
+     * @param left
+     * @param right
+     * @return The approximate midpoint between left and right.
+     */
+    public Token midpoint(Token left, Token right)
     {
-        // the symbolic MINIMUM token should act as ZERO: the empty bit array
-        BigInteger left = ltoken.equals(MINIMUM) ? ZERO : ((BigIntegerToken)ltoken).token;
-        BigInteger right = rtoken.equals(MINIMUM) ? ZERO : ((BigIntegerToken)rtoken).token;
-        Pair<BigInteger,Boolean> midpair = FBUtilities.midpoint(left, right, 127);
-        // discard the remainder
-        return new BigIntegerToken(midpair.left);
+        return null;
     }
 
-    public BigIntegerToken getMinimumToken()
+    /**
+     * @return A Token smaller than all others in the range that is being partitioned.
+     * Not legal to assign to a node or key.  (But legal to use in range scans.)
+     */
+    public Token getMinimumToken()
     {
-        return MINIMUM;
+        return null;
     }
 
-    public BigIntegerToken getRandomToken()
+    /**
+     * @param key
+     * @return a Token that can be used to route a given key
+     * (This is NOT a method to create a Token from its string representation;
+     * for that, use TokenFactory.fromString.)
+     */
+    public Token getToken(ByteBuffer key)
     {
-        BigInteger token = FBUtilities.hashToBigInteger(GuidGenerator.guidAsBytes());
-        if ( token.signum() == -1 )
-            token = token.multiply(BigInteger.valueOf(-1L));
-        return new BigIntegerToken(token);
+        return null;
     }
 
-    private final Token.TokenFactory tokenFactory = new Token.TokenFactory() {
-        public ByteBuffer toByteArray(Token token)
-        {
-            BigIntegerToken bigIntegerToken = (BigIntegerToken) token;
-            return ByteBuffer.wrap(bigIntegerToken.token.toByteArray());
-        }
-
-        public Token fromByteArray(ByteBuffer bytes)
-        {
-            return new BigIntegerToken(new BigInteger(ByteBufferUtil.getArray(bytes)));
-        }
-
-        public String toString(Token token)
-        {
-            BigIntegerToken bigIntegerToken = (BigIntegerToken) token;
-            return bigIntegerToken.token.toString();
-        }
-
-        public void validate(String token) throws ConfigurationException
-        {
-            try
-            {
-                BigInteger i = new BigInteger(token);
-                if (i.compareTo(ZERO) < 0)
-                    throw new ConfigurationException("Token must be >= 0");
-                if (i.compareTo(MAXIMUM) > 0)
-                    throw new ConfigurationException("Token must be <= 2**127");
-            }
-            catch (NumberFormatException e)
-            {
-                throw new ConfigurationException(e.getMessage());
-            }
-        }
-
-        public Token fromString(String string)
-        {
-            return new BigIntegerToken(new BigInteger(string));
-        }
-    };
+    /**
+     * @return a randomly generated token
+     */
+    public Token getRandomToken()
+    {
+        return null;
+    }
 
     public Token.TokenFactory getTokenFactory()
     {
-        return tokenFactory;
+        return null;
     }
 
+    /**
+     * @return True if the implementing class preserves key order in the Tokens
+     * it generates.
+     */
     public boolean preservesOrder()
     {
         return false;
     }
 
-    public static class BigIntegerToken extends ComparableObjectToken<BigInteger>
-    {
-        static final long serialVersionUID = -5833589141319293006L;
-
-        public BigIntegerToken(BigInteger token)
-        {
-            super(token);
-        }
-
-        // convenience method for testing
-        @VisibleForTesting
-        public BigIntegerToken(String token) {
-            this(new BigInteger(token));
-        }
-
-        @Override
-        public IPartitioner getPartitioner()
-        {
-            return instance;
-        }
-
-        @Override
-        public long getHeapSize()
-        {
-            return HEAP_SIZE;
-        }
-    }
-
-    public BigIntegerToken getToken(ByteBuffer key)
-    {
-        if (key.remaining() == 0)
-            return MINIMUM;
-        return new BigIntegerToken(FBUtilities.hashToBigInteger(key));
-    }
-
+    /**
+     * Calculate the deltas between tokens in the ring in order to compare
+     * relative sizes.
+     *
+     * @param sortedTokens a sorted List of Tokens
+     * @return the mapping from 'token' to 'percentage of the ring owned by that token'.
+     */
     public Map<Token, Float> describeOwnership(List<Token> sortedTokens)
     {
-        Map<Token, Float> ownerships = new HashMap<Token, Float>();
-        Iterator<Token> i = sortedTokens.iterator();
-
-        // 0-case
-        if (!i.hasNext()) { throw new RuntimeException("No nodes present in the cluster. Has this node finished starting up?"); }
-        // 1-case
-        if (sortedTokens.size() == 1) {
-            ownerships.put(i.next(), new Float(1.0));
-        }
-        // n-case
-        else {
-            // NOTE: All divisions must take place in BigDecimals, and all modulo operators must take place in BigIntegers.
-            final BigInteger ri = MAXIMUM;                                                  //  (used for addition later)
-            final BigDecimal r  = new BigDecimal(ri);                                       // The entire range, 2**127
-            Token start = i.next(); BigInteger ti = ((BigIntegerToken)start).token;  // The first token and its value
-            Token t; BigInteger tim1 = ti;                                                  // The last token and its value (after loop)
-            while (i.hasNext()) {
-                t = i.next(); ti = ((BigIntegerToken)t).token;                                      // The next token and its value
-                float x = new BigDecimal(ti.subtract(tim1).add(ri).mod(ri)).divide(r).floatValue(); // %age = ((T(i) - T(i-1) + R) % R) / R
-                ownerships.put(t, x);                                                               // save (T(i) -> %age)
-                tim1 = ti;                                                                          // -> advance loop
-            }
-            // The start token's range extends backward to the last token, which is why both were saved above.
-            float x = new BigDecimal(((BigIntegerToken)start).token.subtract(ti).add(ri).mod(ri)).divide(r).floatValue();
-            ownerships.put(start, x);
-        }
-        return ownerships;
+        return null;
     }
 
     public AbstractType<?> getTokenValidator()
     {
-        return IntegerType.instance;
+        return null;
     }
 }
