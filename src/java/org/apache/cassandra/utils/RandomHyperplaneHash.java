@@ -18,6 +18,18 @@
 
 package org.apache.cassandra.utils;
 
+import java.nio.ByteBuffer;
+import java.util.BitSet;
+
 public class RandomHyperplaneHash
 {
+    public static BitSet rhh(ByteBuffer key)
+    {
+        return null;
+    }
+
+    public static BitSet rhh()
+    {
+        return null;
+    }
 }

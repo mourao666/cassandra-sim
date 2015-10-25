@@ -23,20 +23,22 @@ import java.util.BitSet;
 /**
  * Created by mourao666 on 24/10/15.
  */
-public class BinaryReflectedGrayCode
+public class BinaryReflectedGrayCode implements Comparable<BitSet>
 {
-    public static BitSet binaryToGray(BitSet binary)
+    private BitSet grayCode;
+
+    public BinaryReflectedGrayCode(BitSet grayCode)
     {
-        return null;
+        this.grayCode = grayCode;
     }
 
-    public static BitSet grayToBinary(BitSet gray)
-    {
-        return null;
-    }
-
-    public static int compare(BitSet gray1, BitSet gray2)
+    public int compareTo(BitSet grayCode)
     {
         return 0;
+    }
+
+    private static BitSet grayToBinary(BitSet grayCode)
+    {
+        return null;
     }
 }
