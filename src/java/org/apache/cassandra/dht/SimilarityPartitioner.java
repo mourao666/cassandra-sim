@@ -20,15 +20,20 @@ package org.apache.cassandra.dht;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cassandra.config.CFMetaData;
+import org.apache.cassandra.config.Schema;
 import org.apache.cassandra.db.BufferDecoratedKey;
 import org.apache.cassandra.db.DecoratedKey;
 import org.apache.cassandra.db.marshal.AbstractType;
 import org.apache.cassandra.db.marshal.BinaryType;
 import org.apache.cassandra.exceptions.ConfigurationException;
+import org.apache.cassandra.service.StorageService;
 import org.apache.cassandra.utils.ByteBufferUtil;
 import org.apache.cassandra.utils.FBUtilities;
 import org.apache.cassandra.utils.ObjectSizes;
@@ -231,7 +236,39 @@ public class SimilarityPartitioner implements IPartitioner
      */
     public Map<Token, Float> describeOwnership(List<Token> sortedTokens)
     {
-        return null;
+        // allTokens will contain the count and be returned, sorted_ranges is shorthand for token<->token math.
+        Map<Token, Float> allTokens = new HashMap<Token, Float>();
+        List<Range<Token>> sortedRanges = new ArrayList<Range<Token>>(sortedTokens.size());
+
+        // this initializes the counts to 0 and calcs the ranges in order.
+        Token lastToken = sortedTokens.get(sortedTokens.size() - 1);
+        for (Token node : sortedTokens)
+        {
+            allTokens.put(node, new Float(0.0));
+            sortedRanges.add(new Range<Token>(lastToken, node));
+            lastToken = node;
+        }
+
+        for (String ks : Schema.instance.getKeyspaces())
+        {
+            for (CFMetaData cfmd : Schema.instance.getKSMetaData(ks).cfMetaData().values())
+            {
+                for (Range<Token> r : sortedRanges)
+                {
+                    // Looping over every KS:CF:Range, get the splits size and add it to the count
+                    allTokens.put(r.right, allTokens.get(r.right) + StorageService.instance.getSplits(ks, cfmd.cfName, r, 1).size());
+                }
+            }
+        }
+
+        // Sum every count up and divide count/total for the fractional ownership.
+        Float total = new Float(0.0);
+        for (Float f : allTokens.values())
+            total += f;
+        for (Map.Entry<Token, Float> row : allTokens.entrySet())
+            allTokens.put(row.getKey(), row.getValue() / total);
+
+        return allTokens;
     }
 
     public AbstractType<?> getTokenValidator()
