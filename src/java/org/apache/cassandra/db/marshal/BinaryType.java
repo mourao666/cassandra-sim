@@ -21,18 +21,24 @@ package org.apache.cassandra.db.marshal;
 import java.nio.ByteBuffer;
 import java.util.BitSet;
 
+import org.apache.cassandra.cql3.CQL3Type;
+import org.apache.cassandra.cql3.Constants;
 import org.apache.cassandra.cql3.Term;
+import org.apache.cassandra.serializers.BinarySerializer;
 import org.apache.cassandra.serializers.MarshalException;
 import org.apache.cassandra.serializers.TypeSerializer;
+import org.apache.cassandra.utils.ByteBufferUtil;
 
-/**
- * Created by mourao666 on 25/10/15.
- */
 public class BinaryType extends AbstractType<BitSet>
 {
     public static final BinaryType instance = new BinaryType();
 
     BinaryType() {} // singleton
+
+    public int compare(ByteBuffer o1, ByteBuffer o2)
+    {
+        return ByteBufferUtil.compareUnsigned(o1, o2);
+    }
 
     /**
      * get a byte representation of the given string.
@@ -41,7 +47,22 @@ public class BinaryType extends AbstractType<BitSet>
      */
     public ByteBuffer fromString(String source) throws MarshalException
     {
-        return null;
+        // Return an empty ByteBuffer for an empty string.
+        if (source.isEmpty())
+            return ByteBufferUtil.EMPTY_BYTE_BUFFER;
+
+        BitSet binaryType;
+
+        try
+        {
+            binaryType = BitSet.valueOf(ByteBufferUtil.bytes(source));
+        }
+        catch (Exception e)
+        {
+            throw new MarshalException(String.format("Unable to make binary from '%s'", source), e);
+        }
+
+        return decompose(binaryType);
     }
 
     /**
@@ -51,16 +72,46 @@ public class BinaryType extends AbstractType<BitSet>
      **/
     public Term fromJSONObject(Object parsed) throws MarshalException
     {
-        return null;
+        try
+        {
+            return new Constants.Value(fromString((String) parsed));
+        }
+        catch (ClassCastException exc)
+        {
+            throw new MarshalException(String.format(
+                    "Expected a binary string, but got a %s: %s", parsed.getClass().getSimpleName(), parsed));
+        }
+    }
+
+    /**
+     * Converts a value to a JSON string.
+     *
+     * @param buffer
+     * @param protocolVersion
+     */
+    public String toJSONString(ByteBuffer buffer, int protocolVersion)
+    {
+        return super.toJSONString(buffer, protocolVersion);
+    }
+
+    /**
+     * Needed to handle ReversedType in value-compatibility checks.  Subclasses should implement this instead of
+     * isValueCompatibleWith().
+     *
+     * @param otherType
+     */
+    public boolean isValueCompatibleWithInternal(AbstractType<?> otherType)
+    {
+        return super.isValueCompatibleWithInternal(otherType);
+    }
+
+    public CQL3Type asCQL3Type()
+    {
+        return CQL3Type.Native.BINARY;
     }
 
     public TypeSerializer<BitSet> getSerializer()
     {
-        return null;
-    }
-
-    public int compare(ByteBuffer byteBuffer, ByteBuffer t1)
-    {
-        return 0;
+        return BinarySerializer.instance;
     }
 }
