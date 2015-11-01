@@ -20,9 +20,6 @@ package org.apache.cassandra.dht;
 
 import java.util.BitSet;
 
-/**
- * Created by mourao666 on 24/10/15.
- */
 public class BinaryReflectedGrayCode implements Comparable<BitSet>
 {
     private BitSet grayCode;

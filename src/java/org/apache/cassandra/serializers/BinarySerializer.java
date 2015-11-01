@@ -21,32 +21,34 @@ package org.apache.cassandra.serializers;
 import java.nio.ByteBuffer;
 import java.util.BitSet;
 
+import org.apache.cassandra.utils.ByteBufferUtil;
+
 public class BinarySerializer implements TypeSerializer<BitSet>
 {
     public static final BinarySerializer instance = new BinarySerializer();
 
-    public ByteBuffer serialize(BitSet value)
-    {
-        return null;
-    }
-
     public BitSet deserialize(ByteBuffer bytes)
     {
-        return null;
+        return bytes.hasRemaining() ? BitSet.valueOf(bytes) : null;
+    }
+
+    public ByteBuffer serialize(BitSet value)
+    {
+        return value == null ? ByteBufferUtil.EMPTY_BYTE_BUFFER : ByteBuffer.wrap(value.toByteArray());
     }
 
     public void validate(ByteBuffer bytes) throws MarshalException
     {
-
+        // all binary are legal.
     }
 
     public String toString(BitSet value)
     {
-        return null;
+        return value == null ? "" : value.toString();
     }
 
     public Class<BitSet> getType()
     {
-        return null;
+        return BitSet.class;
     }
 }
