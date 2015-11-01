@@ -7,7 +7,7 @@ Implementing similarity search in Cassandra
     - Starts application (delete directory data/ before starts)
 
 SimilarityPartioner (implemented)
-  RandomyperplaneHash
+  RandomyperplaneHash (implemented)
   BinaryReflectedGrayCode
   BinaryType (implemented)
     BinarySerializer (implemented)
