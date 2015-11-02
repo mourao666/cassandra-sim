@@ -8,6 +8,6 @@ Implementing similarity search in Cassandra
 
 SimilarityPartioner (implemented)
   RandomyperplaneHash (implemented)
-  BinaryReflectedGrayCode
+  BinaryReflectedGrayCode (implemented)
   BinaryType (implemented)
     BinarySerializer (implemented)

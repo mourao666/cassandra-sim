@@ -18,7 +18,10 @@
 
 package org.apache.cassandra.dht;
 
+import java.nio.ByteBuffer;
 import java.util.BitSet;
+
+import com.google.common.primitives.Longs;
 
 public class BinaryReflectedGrayCode implements Comparable<BitSet>
 {
@@ -31,11 +34,42 @@ public class BinaryReflectedGrayCode implements Comparable<BitSet>
 
     public int compareTo(BitSet grayCode)
     {
-        return 0;
+        long l1 = ByteBuffer.wrap(grayToBinary(this.grayCode).toByteArray()).getLong();
+        long l2 = ByteBuffer.wrap(grayToBinary(grayCode).toByteArray()).getLong();
+
+        if (l1 < l2)
+        {
+            return -1;
+        }
+        else if (l1 == l2)
+        {
+            return 0;
+        }
+        else
+        {
+            return 1;
+        }
+    }
+
+    private static BitSet binaryToGray(BitSet binary)
+    {
+        long b = ByteBuffer.wrap(binary.toByteArray()).getLong();
+        long grayCode = b ^ (b >> 1);
+        return BitSet.valueOf(Longs.toByteArray(grayCode));
     }
 
     private static BitSet grayToBinary(BitSet grayCode)
     {
-        return null;
+        long gray = ByteBuffer.wrap(grayCode.toByteArray()).getLong();
+        long binary = gray;
+        long i = gray >> 1;
+
+        while (i != 0)
+        {
+            binary = binary ^ i;
+            i = i >> 1;
+        }
+
+        return BitSet.valueOf(Longs.toByteArray(binary));
     }
 }
