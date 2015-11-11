@@ -16,38 +16,46 @@
  * limitations under the License.
  */
 
-package org.apache.cassandra.dht;
+package org.apache.cassandra.utils;
 
-import java.nio.ByteBuffer;
 import java.util.BitSet;
 
-import org.apache.cassandra.utils.BinaryReflectedGrayCodeUtil;
-
-public class BinaryReflectedGrayCode implements Comparable<BitSet>
+public class BinaryReflectedGrayCodeUtil
 {
-    private BitSet grayCode;
+    private static final BitSet ZERO = new BitSet();
 
-    public BinaryReflectedGrayCode(BitSet grayCode)
+    public static BitSet binaryToGray(BitSet binary)
     {
-        this.grayCode = grayCode;
-    }
-
-    public int compareTo(BitSet grayCode)
-    {
-        long l1 = ByteBuffer.wrap(BinaryReflectedGrayCodeUtil.grayToBinary(this.grayCode).toByteArray()).getLong();
-        long l2 = ByteBuffer.wrap(BinaryReflectedGrayCodeUtil.grayToBinary(grayCode).toByteArray()).getLong();
-
-        if (l1 < l2)
+        if (binary.equals(ZERO))
         {
-            return -1;
-        }
-        else if (l1 == l2)
-        {
-            return 0;
+            return (BitSet) ZERO.clone();
         }
         else
         {
-            return 1;
+            BitSet gray = (BitSet) binary.clone();
+            gray.xor(binary.get(1, binary.length()));
+            return gray;
+        }
+    }
+
+    public static BitSet grayToBinary(BitSet gray)
+    {
+        if (gray.equals(ZERO))
+        {
+            return (BitSet) ZERO.clone();
+        }
+        else
+        {
+            BitSet binary = (BitSet) gray.clone();
+            BitSet bs = gray.get(1, gray.length());
+
+            while (!bs.equals(ZERO))
+            {
+                binary.xor(bs);
+                bs = bs.get(1, bs.length());
+            }
+
+            return binary;
         }
     }
 }
