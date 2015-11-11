@@ -34,6 +34,7 @@ import org.apache.cassandra.db.marshal.AbstractType;
 import org.apache.cassandra.db.marshal.BinaryType;
 import org.apache.cassandra.exceptions.ConfigurationException;
 import org.apache.cassandra.service.StorageService;
+import org.apache.cassandra.utils.BinaryReflectedGrayCode;
 import org.apache.cassandra.utils.ByteBufferUtil;
 import org.apache.cassandra.utils.FBUtilities;
 import org.apache.cassandra.utils.ObjectSizes;
@@ -197,7 +198,7 @@ public class SimilarityPartitioner implements IPartitioner
         public int compareTo(Token token)
         {
             BinaryToken o = (BinaryToken) token;
-            return new BinaryReflectedGrayCode(this.token).compareTo(o.token);
+            return new BinaryReflectedGrayCode().compare(this.token, o.token);
         }
 
         @Override
