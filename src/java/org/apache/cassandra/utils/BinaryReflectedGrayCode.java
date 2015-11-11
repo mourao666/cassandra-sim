@@ -16,26 +16,17 @@
  * limitations under the License.
  */
 
-package org.apache.cassandra.dht;
+package org.apache.cassandra.utils;
 
-import java.nio.ByteBuffer;
 import java.util.BitSet;
+import java.util.Comparator;
 
-import org.apache.cassandra.utils.BinaryReflectedGrayCodeUtil;
-
-public class BinaryReflectedGrayCode implements Comparable<BitSet>
+public class BinaryReflectedGrayCode implements Comparator<BitSet>
 {
-    private BitSet grayCode;
-
-    public BinaryReflectedGrayCode(BitSet grayCode)
+    public int compare(BitSet gray1, BitSet gray2)
     {
-        this.grayCode = grayCode;
-    }
-
-    public int compareTo(BitSet grayCode)
-    {
-        long l1 = ByteBuffer.wrap(BinaryReflectedGrayCodeUtil.grayToBinary(this.grayCode).toByteArray()).getLong();
-        long l2 = ByteBuffer.wrap(BinaryReflectedGrayCodeUtil.grayToBinary(grayCode).toByteArray()).getLong();
+        long l1 = convert(BinaryReflectedGrayCodeUtil.grayToBinary(gray1));
+        long l2 = convert(BinaryReflectedGrayCodeUtil.grayToBinary(gray2));
 
         if (l1 < l2)
         {
@@ -50,4 +41,25 @@ public class BinaryReflectedGrayCode implements Comparable<BitSet>
             return 1;
         }
     }
+
+    private static long convert(BitSet bits) {
+        long value = 0L;
+        for (int i = 0; i < bits.length(); ++i) {
+            value += bits.get(i) ? (1L << i) : 0L;
+        }
+        return value;
+    }
+
+    /*private static BitSet convert(long value) {
+        BitSet bits = new BitSet();
+        int index = 0;
+        while (value != 0L) {
+            if (value % 2L != 0) {
+                bits.set(index);
+            }
+            ++index;
+            value = value >>> 1;
+        }
+        return bits;
+    }*/
 }
