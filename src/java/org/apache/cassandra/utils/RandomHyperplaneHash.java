@@ -19,6 +19,7 @@
 package org.apache.cassandra.utils;
 
 import java.nio.ByteBuffer;
+import java.nio.DoubleBuffer;
 import java.util.BitSet;
 import java.util.Random;
 
@@ -27,6 +28,17 @@ public class RandomHyperplaneHash
     // TODO implement validation for bits number
     private static final int BITS = 8;
 
+    private static final double[][] VECTORS = {
+        {-0.1, -0.9, -0.6, 0.5, 0.5, -0.8},
+        {0.8, 0.7, -0.6, -0.5, 0, -0.8},
+        {0, 0.1, 0.6, -0.9, -0.7, -0.3},
+        {0.4, -0.5, 0.1, -0.8, 0.2, 0},
+        {-0.7, -0.8, -0.7, 0, 0.2, -0.9},
+        {0.1, 0.5, 0.4, -0.1, -0.7, 0.6},
+        {-0.5, 0.5, 0.1, -0.7, 0.4, 0.3},
+        {0.4, 0.3, -0.2, 0, 0.1, -0.5}
+    };
+
     private RandomHyperplaneHash()
     {
 
@@ -34,27 +46,29 @@ public class RandomHyperplaneHash
 
     public static BitSet rhh(ByteBuffer key)
     {
-        int dimension = key.remaining() / 8;
+        int dimension = key.capacity() / 8;
 
         double[] vectorKey = getVectorKey(key, dimension);
-        double[][] vectors = getVectors(dimension);
 
         BitSet hash = new BitSet(BITS);
 
         double sum;
 
-        for (int i = 0; i < vectors.length; i++)
-        {
-            sum = scalarProduct(vectorKey, vectors[i]);
+        int i = VECTORS.length - 1;
+        int j = 0;
 
-            if (sum >= 0)
+        while (i >= 0) {
+            sum = scalarProduct(vectorKey, VECTORS[i]);
+            if (sum >= 0.0)
             {
-                hash.set(i, true);
+                hash.set(j, true);
             }
             else
             {
-                hash.set(i, false);
+                hash.set(j, false);
             }
+            i--;
+            j++;
         }
 
         return hash;
@@ -72,17 +86,32 @@ public class RandomHyperplaneHash
 
     private static double[] getVectorKey(ByteBuffer key, int dimension)
     {
+        DoubleBuffer buffer = ((ByteBuffer) key.rewind()).asDoubleBuffer();
         double[] vector = new double[dimension];
 
-        for (int i = 0; i < dimension; i++)
+        int i = 0;
+        while (buffer.hasRemaining())
         {
-            vector[i] = key.getDouble();
+            vector[i] = buffer.get();
+            i++;
         }
 
         return vector;
     }
 
-    private static double[][] getVectors(int dimension)
+    private static double scalarProduct(double[] v1, double[] v2)
+    {
+        double scalarProduct = 0;
+
+        for (int i = 0; i < v1.length; i++)
+        {
+            scalarProduct = scalarProduct + (v1[i] * v2[i]);
+        }
+
+        return scalarProduct;
+    }
+
+    /*private static double[][] getVectors(int dimension)
     {
         double[][] vectors = new double[BITS][dimension];
 
@@ -97,17 +126,5 @@ public class RandomHyperplaneHash
         }
 
         return vectors;
-    }
-
-    private static double scalarProduct(double[] v1, double[] v2)
-    {
-        double scalarProduct = 0;
-
-        for (int i = 0; i < v1.length; i++)
-        {
-            scalarProduct = scalarProduct + (v1[i] * v2[i]);
-        }
-
-        return scalarProduct;
-    }
+    }*/
 }
