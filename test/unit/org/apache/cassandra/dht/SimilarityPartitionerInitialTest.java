@@ -3,6 +3,9 @@ package org.apache.cassandra.dht;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.apache.cassandra.db.marshal.BinaryType;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class SimilarityPartitionerInitialTest
@@ -66,6 +69,6 @@ public class SimilarityPartitionerInitialTest
     @Test
     public void testGetTokenValidator() throws Exception
     {
-
+        assertEquals(BinaryType.instance, partitioner.getTokenValidator());
     }
 }
