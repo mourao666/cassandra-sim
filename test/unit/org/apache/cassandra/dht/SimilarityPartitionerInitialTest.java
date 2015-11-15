@@ -1,9 +1,19 @@
 package org.apache.cassandra.dht;
 
+import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 public class SimilarityPartitionerInitialTest
 {
+    private IPartitioner partitioner;
+
+    @Before
+    public void initPartitioner()
+    {
+        partitioner = SimilarityPartitioner.instance;
+    }
 
     @Test
     public void testDecorateKey() throws Exception
@@ -44,7 +54,7 @@ public class SimilarityPartitionerInitialTest
     @Test
     public void testPreservesOrder() throws Exception
     {
-
+        assertTrue(partitioner.preservesOrder());
     }
 
     @Test
