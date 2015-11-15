@@ -63,7 +63,7 @@ public class RandomHyperplaneHash
     public static BitSet rhh()
     {
         Random seed = new Random();
-        byte[] bytes = new byte[(seed.nextInt(Integer.MAX_VALUE) + 1) * 8];
+        byte[] bytes = new byte[(Math.abs(seed.nextInt(Integer.MAX_VALUE)) + 1) * 8];
         seed.nextBytes(bytes);
         ByteBuffer key = ByteBuffer.wrap(bytes);
 
