@@ -33,7 +33,7 @@ public class SimilarityPartitionerInitialTest
     @Test
     public void testGetMinimumToken() throws Exception
     {
-
+        assertTrue(partitioner.getMinimumToken().isMinimum());
     }
 
     @Test
