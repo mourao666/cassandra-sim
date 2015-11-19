@@ -44,7 +44,25 @@ public class BinarySerializer implements TypeSerializer<BitSet>
 
     public String toString(BitSet value)
     {
-        return value == null ? "" : value.toString();
+        return value == null ? "" : bitsToBinaryString(value);
+    }
+
+    private String bitsToBinaryString(BitSet value)
+    {
+        StringBuilder builder = new StringBuilder(value.length());
+
+        for (int i = 0; i< value.length(); i++)
+        {
+            if (value.get(i))
+            {
+                builder.append("1");
+            }
+            else {
+                builder.append("0");
+            }
+        }
+
+        return builder.toString();
     }
 
     public Class<BitSet> getType()
