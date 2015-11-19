@@ -4,6 +4,6 @@ public class SimilarityPartitionerTest extends PartitionerTestCase
 {
     public void initPartitioner()
     {
-
+        partitioner = SimilarityPartitioner.instance;
     }
 }
