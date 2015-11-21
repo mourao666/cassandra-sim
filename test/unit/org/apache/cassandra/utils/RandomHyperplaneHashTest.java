@@ -25,6 +25,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class RandomHyperplaneHashTest
 {
@@ -62,6 +63,7 @@ public class RandomHyperplaneHashTest
     @Test
     public void testRhhWithoutKey() throws Exception
     {
-
+        BitSet rhh = RandomHyperplaneHash.rhh();
+        assertNotNull(rhh);
     }
 }

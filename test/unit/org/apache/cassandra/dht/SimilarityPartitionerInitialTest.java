@@ -10,6 +10,7 @@ import org.apache.cassandra.db.marshal.BinaryType;
 import org.apache.cassandra.utils.ObjectSizes;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class SimilarityPartitionerInitialTest
@@ -97,7 +98,7 @@ public class SimilarityPartitionerInitialTest
     @Test
     public void testGetRandomToken() throws Exception
     {
-
+        assertNotNull(partitioner.getRandomToken());
     }
 
     @Test
