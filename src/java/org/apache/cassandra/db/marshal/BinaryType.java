@@ -91,7 +91,7 @@ public class BinaryType extends AbstractType<BitSet>
      */
     public String toJSONString(ByteBuffer buffer, int protocolVersion)
     {
-        return super.toJSONString(buffer, protocolVersion);
+        return '"' + getSerializer().toString(getSerializer().deserialize(buffer)) + '"';
     }
 
     /**
