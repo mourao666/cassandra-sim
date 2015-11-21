@@ -91,6 +91,7 @@ public class SimilarityPartitionerInitialTest
         assertEquals(ObjectSizes.measure(new SimilarityPartitioner.BinaryToken(new BitSet())) +
                      ObjectSizes.sizeOfArray(keyHash.toByteArray()), token.getHeapSize());
         // getTokenValue
+        assertEquals(keyHash, token.getTokenValue());
     }
 
     @Test
