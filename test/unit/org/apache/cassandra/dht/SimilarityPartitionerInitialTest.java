@@ -93,6 +93,8 @@ public class SimilarityPartitionerInitialTest
                      ObjectSizes.sizeOfArray(keyHash.toByteArray()), token.getHeapSize());
         // getTokenValue
         assertEquals(keyHash, token.getTokenValue());
+        // toString
+//        assertEquals("10101110", token.toString());
     }
 
     @Test
@@ -104,7 +106,20 @@ public class SimilarityPartitionerInitialTest
     @Test
     public void testGetTokenFactory() throws Exception
     {
+        Token.TokenFactory factory = partitioner.getTokenFactory();
+        testTokenFactory(factory);
+    }
 
+    private void testTokenFactory(Token.TokenFactory factory)
+    {
+        // toByteArray
+        assertEquals(ByteBuffer.wrap(keyHash.toByteArray()), factory.toByteArray(partitioner.getToken(key)));
+        // fromByteArray
+        assertEquals(partitioner.getToken(key).getTokenValue(), factory.fromByteArray(ByteBuffer.wrap(keyHash.toByteArray())).getTokenValue());
+        // toString
+//        assertEquals("10101110", factory.toString(partitioner.getToken(key)));
+        // validate
+        // fromString
     }
 
     @Test

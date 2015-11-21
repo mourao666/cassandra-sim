@@ -33,6 +33,7 @@ import org.apache.cassandra.db.DecoratedKey;
 import org.apache.cassandra.db.marshal.AbstractType;
 import org.apache.cassandra.db.marshal.BinaryType;
 import org.apache.cassandra.exceptions.ConfigurationException;
+import org.apache.cassandra.serializers.BinarySerializer;
 import org.apache.cassandra.service.StorageService;
 import org.apache.cassandra.utils.BinaryReflectedGrayCode;
 import org.apache.cassandra.utils.ByteBufferUtil;
@@ -217,6 +218,12 @@ public class SimilarityPartitioner implements IPartitioner
         public Object getTokenValue()
         {
             return token;
+        }
+
+        @Override
+        public String toString()
+        {
+            return ((BinarySerializer) getPartitioner().getTokenValidator().getSerializer()).toString(token);
         }
     }
 
