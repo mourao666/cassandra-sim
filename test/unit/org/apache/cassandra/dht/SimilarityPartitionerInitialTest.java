@@ -45,14 +45,14 @@ public class SimilarityPartitionerInitialTest
     private void initKeyHash()
     {
         keyHash = new BitSet(8);
-        keyHash.set(0, true);
-        keyHash.set(1, false);
-        keyHash.set(2, true);
-        keyHash.set(3, false);
-        keyHash.set(4, true);
+        keyHash.set(7, true);
+        keyHash.set(6, false);
         keyHash.set(5, true);
-        keyHash.set(6, true);
-        keyHash.set(7, false);
+        keyHash.set(4, false);
+        keyHash.set(3, true);
+        keyHash.set(2, true);
+        keyHash.set(1, true);
+        keyHash.set(0, false);
     }
 
     @Test
@@ -94,7 +94,7 @@ public class SimilarityPartitionerInitialTest
         // getTokenValue
         assertEquals(keyHash, token.getTokenValue());
         // toString
-//        assertEquals("10101110", token.toString());
+        assertEquals("10101110", token.toString());
     }
 
     @Test
@@ -107,19 +107,22 @@ public class SimilarityPartitionerInitialTest
     public void testGetTokenFactory() throws Exception
     {
         Token.TokenFactory factory = partitioner.getTokenFactory();
-        testTokenFactory(factory);
+        testTokenFactory(factory, partitioner.getToken(key));
     }
 
-    private void testTokenFactory(Token.TokenFactory factory)
+    private void testTokenFactory(Token.TokenFactory factory, Token token)
     {
         // toByteArray
-        assertEquals(ByteBuffer.wrap(keyHash.toByteArray()), factory.toByteArray(partitioner.getToken(key)));
+        assertEquals(ByteBuffer.wrap(keyHash.toByteArray()), factory.toByteArray(token));
         // fromByteArray
         assertEquals(partitioner.getToken(key).getTokenValue(), factory.fromByteArray(ByteBuffer.wrap(keyHash.toByteArray())).getTokenValue());
         // toString
-//        assertEquals("10101110", factory.toString(partitioner.getToken(key)));
+        assertEquals("10101110", factory.toString(token));
         // validate
+        // TODO test validate correctly, after changing the implementation
+        factory.validate(token.toString());
         // fromString
+        assertEquals(0, token.compareTo(factory.fromString("10101110")));
     }
 
     @Test

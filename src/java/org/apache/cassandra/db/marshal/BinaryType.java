@@ -55,7 +55,13 @@ public class BinaryType extends AbstractType<BitSet>
 
         try
         {
-            binaryType = BitSet.valueOf(ByteBufferUtil.bytes(source));
+//            binaryType = BitSet.valueOf(ByteBufferUtil.bytes(source));
+            binaryType = new BitSet(source.length());
+            String reverseSource = new StringBuilder(source).reverse().toString();
+            for (int i=0; i<reverseSource.length(); i++)
+            {
+                binaryType.set(i, reverseSource.charAt(i) == '1');
+            }
         }
         catch (Exception e)
         {

@@ -28,6 +28,7 @@ public class RandomHyperplaneHash
     // TODO implement validation for bits number
     private static final int BITS = 8;
 
+    // TODO get vectors dinamicaly
     private static final double[][] VECTORS = {
         {-0.1, -0.9, -0.6, 0.5, 0.5, -0.8},
         {0.8, 0.7, -0.6, -0.5, 0, -0.8},
@@ -54,10 +55,10 @@ public class RandomHyperplaneHash
 
         double sum;
 
-        int i = VECTORS.length - 1;
+        int i = 0;
         int j = 0;
 
-        while (i >= 0) {
+        while (i < VECTORS.length) {
             sum = scalarProduct(vectorKey, VECTORS[i]);
             if (sum >= 0.0)
             {
@@ -67,7 +68,7 @@ public class RandomHyperplaneHash
             {
                 hash.set(j, false);
             }
-            i--;
+            i++;
             j++;
         }
 

@@ -168,6 +168,7 @@ public class SimilarityPartitioner implements IPartitioner
         {
             try
             {
+                // TODO validade token correctly (probably number of bits)
                 BitSet.valueOf(ByteBufferUtil.bytes(token));
             }
             catch (Exception e)
@@ -178,7 +179,14 @@ public class SimilarityPartitioner implements IPartitioner
 
         public Token fromString(String string)
         {
-            return new BinaryToken(BitSet.valueOf(ByteBufferUtil.bytes(string)));
+            BitSet bits = new BitSet(string.length());
+            String reverseString = new StringBuilder(string).reverse().toString();
+            for (int i=0; i<reverseString.length(); i++)
+            {
+                bits.set(i, reverseString.charAt(i) == '1');
+            }
+            return new BinaryToken(bits);
+//            return new BinaryToken(BitSet.valueOf(ByteBufferUtil.bytes(string)));
         }
     };
 

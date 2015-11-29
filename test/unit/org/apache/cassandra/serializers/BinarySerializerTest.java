@@ -53,6 +53,9 @@ public class BinarySerializerTest
     {
         assertTrue(serializer.toString(null).isEmpty());
         assertEquals("1111", serializer.toString(value));
+        assertEquals("1000000000000000000000000000000000000000000000000000000000000000", serializer.toString(BitSet.valueOf(new long[]{Long.MIN_VALUE})));
+        assertEquals("1010011010", serializer.toString(BitSet.valueOf(new long[]{666L})));
+        assertEquals("111111111111111111111111111111111111111111111111111111111111111", serializer.toString(BitSet.valueOf(new long[]{Long.MAX_VALUE})));
     }
 
     @Test

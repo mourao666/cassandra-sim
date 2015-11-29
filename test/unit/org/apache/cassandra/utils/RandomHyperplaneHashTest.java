@@ -43,14 +43,14 @@ public class RandomHyperplaneHashTest
         }
 
         hash = new BitSet(8);
-        hash.set(0, true);
-        hash.set(1, false);
-        hash.set(2, true);
-        hash.set(3, false);
-        hash.set(4, true);
+        hash.set(7, true);
+        hash.set(6, false);
         hash.set(5, true);
-        hash.set(6, true);
-        hash.set(7, false);
+        hash.set(4, false);
+        hash.set(3, true);
+        hash.set(2, true);
+        hash.set(1, true);
+        hash.set(0, false);
     }
 
     @Test
