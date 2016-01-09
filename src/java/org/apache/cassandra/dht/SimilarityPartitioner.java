@@ -80,7 +80,7 @@ public class SimilarityPartitioner implements IPartitioner
         BigInteger left = bigForBinary(lt.token, sigbytes);
         BigInteger right = bigForBinary(rt.token, sigbytes);
 
-        Pair<BigInteger,Boolean> midpair = FBUtilities.midpoint(left, right, 8*sigbytes);
+        Pair<BigInteger, Boolean> midpair = FBUtilities.midpoint(left, right, 8 * sigbytes);
         return new BinaryToken(binaryForBig(midpair.left, sigbytes, midpair.right));
     }
 
@@ -91,7 +91,8 @@ public class SimilarityPartitioner implements IPartitioner
         {
             b = new byte[sigbytes];
             System.arraycopy(bytes, 0, b, 0, bytes.length);
-        } else
+        }
+        else
             b = bytes;
         return new BigInteger(1, b);
     }
@@ -109,7 +110,7 @@ public class SimilarityPartitioner implements IPartitioner
         {
             int maskpos = 8 * (sigbytes - (i + 1));
             // apply bitmask and get byte value
-            bytes[i] = (byte)(big.and(BYTE_MASK.shiftLeft(maskpos)).shiftRight(maskpos).intValue() & 0xFF);
+            bytes[i] = (byte) (big.and(BYTE_MASK.shiftLeft(maskpos)).shiftRight(maskpos).intValue() & 0xFF);
         }
         return BitSet.valueOf(bytes);
     }
@@ -181,7 +182,7 @@ public class SimilarityPartitioner implements IPartitioner
         {
             BitSet bits = new BitSet(string.length());
             String reverseString = new StringBuilder(string).reverse().toString();
-            for (int i=0; i<reverseString.length(); i++)
+            for (int i = 0; i < reverseString.length(); i++)
             {
                 bits.set(i, reverseString.charAt(i) == '1');
             }

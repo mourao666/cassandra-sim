@@ -33,7 +33,9 @@ public class BinaryType extends AbstractType<BitSet>
 {
     public static final BinaryType instance = new BinaryType();
 
-    BinaryType() {} // singleton
+    BinaryType()
+    {
+    } // singleton
 
     public int compare(ByteBuffer o1, ByteBuffer o2)
     {
@@ -58,7 +60,7 @@ public class BinaryType extends AbstractType<BitSet>
 //            binaryType = BitSet.valueOf(ByteBufferUtil.bytes(source));
             binaryType = new BitSet(source.length());
             String reverseSource = new StringBuilder(source).reverse().toString();
-            for (int i=0; i<reverseSource.length(); i++)
+            for (int i = 0; i < reverseSource.length(); i++)
             {
                 binaryType.set(i, reverseSource.charAt(i) == '1');
             }
@@ -85,7 +87,7 @@ public class BinaryType extends AbstractType<BitSet>
         catch (ClassCastException exc)
         {
             throw new MarshalException(String.format(
-                    "Expected a binary string, but got a %s: %s", parsed.getClass().getSimpleName(), parsed));
+            "Expected a binary string, but got a %s: %s", parsed.getClass().getSimpleName(), parsed));
         }
     }
 

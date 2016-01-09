@@ -47,9 +47,11 @@ public class BinarySerializer implements TypeSerializer<BitSet>
         return value == null ? "" : Long.toBinaryString(toLong(value));
     }
 
-    private static long toLong(BitSet bits) {
+    private static long toLong(BitSet bits)
+    {
         long value = 0L;
-        for (int i = 0; i < bits.length(); ++i) {
+        for (int i = 0; i < bits.length(); ++i)
+        {
             value += bits.get(i) ? (1L << i) : 0L;
         }
         return value;
