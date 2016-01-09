@@ -28,7 +28,7 @@ public class RandomHyperplaneHash
     // TODO implement validation for bits number
     private static final int BITS = 8;
 
-    // TODO get vectors dinamicaly
+    // TODO get vectors dynamically
     private static final double[][] VECTORS = {
         {-0.1, -0.9, -0.6, 0.5, 0.5, -0.8},
         {0.8, 0.7, -0.6, -0.5, 0, -0.8},
