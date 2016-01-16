@@ -23,44 +23,31 @@ import java.nio.DoubleBuffer;
 import java.util.BitSet;
 import java.util.Random;
 
+import org.apache.cassandra.config.DatabaseDescriptor;
+
 public class RandomHyperplaneHash
 {
-    // TODO implement validation for bits number
-    private static final int BITS = 8;
-
-    // TODO get vectors dynamically
-    private static final double[][] VECTORS = {
-    { -0.1, -0.9, -0.6, 0.5, 0.5, -0.8 },
-    { 0.8, 0.7, -0.6, -0.5, 0, -0.8 },
-    { 0, 0.1, 0.6, -0.9, -0.7, -0.3 },
-    { 0.4, -0.5, 0.1, -0.8, 0.2, 0 },
-    { -0.7, -0.8, -0.7, 0, 0.2, -0.9 },
-    { 0.1, 0.5, 0.4, -0.1, -0.7, 0.6 },
-    { -0.5, 0.5, 0.1, -0.7, 0.4, 0.3 },
-    { 0.4, 0.3, -0.2, 0, 0.1, -0.5 }
-    };
-
-    private RandomHyperplaneHash()
+    public BitSet rhh(ByteBuffer key)
     {
-
+        return rhh(key, DatabaseDescriptor.getIdentifierLength(), DatabaseDescriptor.getVectors());
     }
 
-    public static BitSet rhh(ByteBuffer key)
+    private static BitSet rhh(ByteBuffer key, int bits, double[][] vectors)
     {
         int dimension = key.capacity() / 8;
 
         double[] vectorKey = getVectorKey(key, dimension);
 
-        BitSet hash = new BitSet(BITS);
+        BitSet hash = new BitSet(bits);
 
         double sum;
 
         int i = 0;
         int j = 0;
 
-        while (i < VECTORS.length)
+        while (i < vectors.length)
         {
-            sum = scalarProduct(vectorKey, VECTORS[i]);
+            sum = scalarProduct(vectorKey, vectors[i]);
             if (sum >= 0.0)
             {
                 hash.set(j, true);
@@ -76,15 +63,20 @@ public class RandomHyperplaneHash
         return hash;
     }
 
-    public static BitSet rhh()
+    public BitSet rhh()
+    {
+        return rhh(DatabaseDescriptor.getIdentifierLength(), DatabaseDescriptor.getVectors());
+    }
+
+    private static BitSet rhh(int bits, double[][] vectors)
     {
         Random seed = new Random();
-        // TODO get size of byte array dynamically
+        // TODO get size of byte array dynamically, size 6
         byte[] bytes = new byte[6 * 8];
         seed.nextBytes(bytes);
         ByteBuffer key = ByteBuffer.wrap(bytes);
 
-        return rhh(key);
+        return rhh(key, bits, vectors);
     }
 
     private static double[] getVectorKey(ByteBuffer key, int dimension)
@@ -114,13 +106,13 @@ public class RandomHyperplaneHash
         return scalarProduct;
     }
 
-    /*private static double[][] getVectors(int dimension)
+    /*private static double[][] getVectors(int bits, int dimension)
     {
-        double[][] vectors = new double[BITS][dimension];
+        double[][] vectors = new double[bits][dimension];
 
         Random seed = new Random();
 
-        for (int i = 0; i < BITS; i++)
+        for (int i = 0; i < bits; i++)
         {
             for (int j = 0; j < dimension; j++)
             {

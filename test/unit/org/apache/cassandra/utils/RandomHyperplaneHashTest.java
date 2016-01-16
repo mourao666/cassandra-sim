@@ -56,14 +56,14 @@ public class RandomHyperplaneHashTest
     @Test
     public void testRhhWithKey() throws Exception
     {
-        BitSet rhh = RandomHyperplaneHash.rhh(key);
+        BitSet rhh = new RandomHyperplaneHash().rhh(key);
         assertEquals(hash, rhh);
     }
 
     @Test
     public void testRhhWithoutKey() throws Exception
     {
-        BitSet rhh = RandomHyperplaneHash.rhh();
+        BitSet rhh = new RandomHyperplaneHash().rhh();
         assertNotNull(rhh);
     }
 }
