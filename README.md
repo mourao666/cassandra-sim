@@ -20,13 +20,13 @@ Implementa o tipo de serialização baseado no Token.
 Foi feita uma alteração, adicionando ao enum a linha "BINARY      (BinaryType.instance),".
 
 ## cassandra.yaml
-Adicionado duas propriedades para o calculo do rhh
-identifier_length - o tamanho do identificador gerado
+Adicionado duas propriedades para o calculo do rhh  
+identifier_length - o tamanho do identificador gerado  
 vectors - os vetores aleatórios
 
 ## Config
-Adicionado duas propriedades para o calculo do rhh
-identifier_length - o tamanho do identificador gerado
+Adicionado duas propriedades para o calculo do rhh  
+identifier_length - o tamanho do identificador gerado  
 vectors - os vetores aleatórios
 
 ## DatabaseDescriptor
