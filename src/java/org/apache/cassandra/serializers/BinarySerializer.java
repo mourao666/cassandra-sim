@@ -21,11 +21,22 @@ package org.apache.cassandra.serializers;
 import java.nio.ByteBuffer;
 import java.util.BitSet;
 
+import org.apache.cassandra.config.DatabaseDescriptor;
 import org.apache.cassandra.utils.ByteBufferUtil;
 
 public class BinarySerializer implements TypeSerializer<BitSet>
 {
     public static final BinarySerializer instance = new BinarySerializer();
+
+    private static long toLong(BitSet bits)
+    {
+        long value = 0L;
+        for (int i = 0; i < bits.length(); ++i)
+        {
+            value += bits.get(i) ? (1L << i) : 0L;
+        }
+        return value;
+    }
 
     public BitSet deserialize(ByteBuffer bytes)
     {
@@ -44,17 +55,7 @@ public class BinarySerializer implements TypeSerializer<BitSet>
 
     public String toString(BitSet value)
     {
-        return value == null ? "" : Long.toBinaryString(toLong(value));
-    }
-
-    private static long toLong(BitSet bits)
-    {
-        long value = 0L;
-        for (int i = 0; i < bits.length(); ++i)
-        {
-            value += bits.get(i) ? (1L << i) : 0L;
-        }
-        return value;
+        return value == null ? "" : String.format("%" + DatabaseDescriptor.getIdentifierLength() + "s", Long.toBinaryString(toLong(value))).replace(" ", "0");
     }
 
     public Class<BitSet> getType()

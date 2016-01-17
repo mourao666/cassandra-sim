@@ -1808,6 +1808,7 @@ public class DatabaseDescriptor
     }
 
     // TODO - check if there are settings
+    // TODO - check if identifier_length == vectors.size
     /*
      * Similarity search configurations
      */
