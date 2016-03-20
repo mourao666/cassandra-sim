@@ -1,7 +1,7 @@
 # cassandra-sim
 Implementing similarity search in Cassandra
 
-## SimilarityPartioner
+## SimilarityPartitioner
 Implementa a interface IPartitioner, responsável por gerar os Tokens baseados no tipo de particionamento escolhido.
 
 ### RandomHyperplaneHash
