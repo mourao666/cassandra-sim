@@ -1,3 +1,7 @@
+#This project was moved to the pluxos group:
+
+[cassandra-sim pluxos](https://github.com/pluxos/cassandra-sim)
+
 # cassandra-sim
 Implementing similarity search in Cassandra
 
