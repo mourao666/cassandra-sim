@@ -367,4 +367,10 @@ public class Config
     {
         keyspace
     }
+
+    /*
+     * Similarity search configurations
+     */
+    public Integer identifier_length;
+    public List<List<Double>> vectors;
 }

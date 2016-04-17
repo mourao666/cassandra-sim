@@ -873,3 +873,15 @@ enable_user_defined_functions: false
 # below their system default. The sysinternals 'clockres' tool can confirm your system's default
 # setting.
 windows_timer_interval: 1
+
+# Similarity search configurations
+identifier_length: 8
+vectors:
+    - [-0.1, -0.9, -0.6, 0.5, 0.5, -0.8]
+    - [0.8, 0.7, -0.6, -0.5, 0.0, -0.8]
+    - [0.0, 0.1, 0.6, -0.9, -0.7, -0.3]
+    - [0.4, -0.5, 0.1, -0.8, 0.2, 0.0]
+    - [-0.7, -0.8, -0.7, 0.0, 0.2, -0.9]
+    - [0.1, 0.5, 0.4, -0.1, -0.7, 0.6]
+    - [-0.5, 0.5, 0.1, -0.7, 0.4, 0.3]
+    - [0.4, 0.3, -0.2, 0.0, 0.1, -0.5]

@@ -135,7 +135,7 @@ public class SimilarityPartitioner implements IPartitioner
         if (key.remaining() == 0)
             return MINIMUM;
         // TODO implement validation for ByteBuffer multiple of 8 bytes (double type)
-        return new BinaryToken(RandomHyperplaneHash.rhh(key));
+        return new BinaryToken(new RandomHyperplaneHash().rhh(key));
     }
 
     /**
@@ -143,7 +143,7 @@ public class SimilarityPartitioner implements IPartitioner
      */
     public Token getRandomToken()
     {
-        return new BinaryToken(RandomHyperplaneHash.rhh());
+        return new BinaryToken(new RandomHyperplaneHash().rhh());
     }
 
     private final Token.TokenFactory tokenFactory = new Token.TokenFactory()
